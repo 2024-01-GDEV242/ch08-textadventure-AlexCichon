@@ -1,3 +1,5 @@
+import java.util.Stack;
+
 /**
  *  This class is the main class of the "World of Zuul" application. 
  *  "World of Zuul" is a very simple, text based adventure game.  Users 
@@ -19,7 +21,11 @@ public class Game
 {
     private Parser parser;
     private Room currentRoom;
-        
+    private Room previousRoom;
+    private Stack<Room> roomPath;
+    private Player player;
+  
+    
     /**
      * Create the game and initialise its internal map.
      */
@@ -34,30 +40,83 @@ public class Game
      */
     private void createRooms()
     {
-        Room outside, theater, pub, lab, office;
+        Room Entrance, Barracks, HoldingCells, Garden, CastleYard, Shrine, ArtistryHall, TreasuryRoom, FoodStorageRoom,
+        Kitchen, EatingHall, Library, BasicStorageRoom, StudyRoom, NoblemenBathroom, MasterBedroom;
       
         // create the rooms
-        outside = new Room("outside the main entrance of the university");
-        theater = new Room("in a lecture theater");
-        pub = new Room("in the campus pub");
-        lab = new Room("in a computing lab");
-        office = new Room("in the computing admin office");
+        Entrance = new Room("Entrance of the Noblemen Castle");
+        Barracks = new Room("now in the Barracks of the castle");
+        Kitchen = new Room("now in the kitchen of the castle");
+        FoodStorageRoom = new Room("now in the food storage room of the castle");
+        BasicStorageRoom = new Room("now in the basic storage room of the castle");
+        EatingHall = new Room("now in the eating hall of the castle");
+        ArtistryHall = new Room("now in the artistry hall of the castle");
+        TreasuryRoom= new Room("now in the treasury room of the caslte");
+        FoodStorageRoom = new Room("now in the food storage room of the castle");
+        HoldingCells = new Room("now in the holding cells of the castle");
+        Shrine = new Room("now in the shrine room of the castle");
+        CastleYard = new Room("now in the castle yard");
+        Library = new Room("now in the library of the castle");
+        StudyRoom = new Room("now in the study room of the castle");
+        NoblemenBathroom = new Room("now in the noblemens bathroom");
+        MasterBedroom = new Room("now in the master bedroom of the noblemen");
+        Garden  = new Room("now in the garden of the castle");
         
         // initialise room exits
-        outside.setExit("east", theater);
-        outside.setExit("south", lab);
-        outside.setExit("west", pub);
+        Entrance.setExit("north", Barracks);
+        Entrance.setExit("east", ArtistryHall);
+        Entrance.setExit("south", Kitchen);
 
-        theater.setExit("west", outside);
+        Barracks.setExit("east", HoldingCells);
+        Barracks.setExit("south", Entrance);
+        
+        HoldingCells.setExit("west", Barracks);
 
-        pub.setExit("east", outside);
+        Kitchen.setExit("west", FoodStorageRoom);
+        Kitchen.setExit("south", BasicStorageRoom);
+        Kitchen.setExit("east", EatingHall);
+        Kitchen.setExit("north", Entrance);
+        
+        FoodStorageRoom.setExit("east", Kitchen);
+        
+        BasicStorageRoom.setExit("north", Kitchen);
+        
 
-        lab.setExit("north", outside);
-        lab.setExit("east", office);
+        EatingHall.setExit("west", Kitchen);
+        
+        ArtistryHall.setExit("west", Entrance);
+        ArtistryHall.setExit("east", TreasuryRoom);
+        ArtistryHall.setExit("south", Library);
+        
+        TreasuryRoom.setExit("west", ArtistryHall);
+        
+        Library.setExit("north", ArtistryHall);
+        Library.setExit("east", StudyRoom);
+        
+        StudyRoom.setExit("south", MasterBedroom);
+        StudyRoom.setExit("west", Library);
+        StudyRoom.setExit("east", NoblemenBathroom);
+        StudyRoom.setExit("north", Shrine);
+        
+        MasterBedroom.setExit("north", StudyRoom);
+        
+        NoblemenBathroom.setExit("west", StudyRoom);
+        
+        Shrine.setExit("south", StudyRoom);
+        Shrine.setExit("west", CastleYard);
+        
+        CastleYard.setExit("east", Shrine);
+        CastleYard.setExit("west", Garden);
+        
+        Garden.setExit("east", CastleYard);
 
-        office.setExit("west", lab);
+       
 
-        currentRoom = outside;  // start game outside
+        player = new Player("Alex", Entrance); 
+        // start game outside
+        roomPath = new Stack<>();
+        //initialize the room path stack
+        
     }
 
     /**
@@ -75,7 +134,7 @@ public class Game
             Command command = parser.getCommand();
             finished = processCommand(command);
         }
-        System.out.println("Thank you for playing.  Good bye.");
+        System.out.println("Thank you for playing" + player.getName()+ ". Good bye.");
     }
 
     /**
@@ -84,8 +143,8 @@ public class Game
     private void printWelcome()
     {
         System.out.println();
-        System.out.println("Welcome to the World of Zuul!");
-        System.out.println("World of Zuul is a new, incredibly boring adventure game.");
+        System.out.println("Welcome to A Theifs Trail");
+        System.out.println("A Theifs Trail, is game where the theif must steal the nobles crown");
         System.out.println("Type '" + CommandWord.HELP + "' if you need help.");
         System.out.println();
         System.out.println(currentRoom.getLongDescription());
@@ -118,6 +177,18 @@ public class Game
             case QUIT:
                 wantToQuit = quit(command);
                 break;
+                
+            case LOOK:
+                look();
+                break;
+            
+            case EAT:
+                eat();
+                break;
+            
+            case BACK:
+                back();
+                break;
         }
         return wantToQuit;
     }
@@ -131,10 +202,10 @@ public class Game
      */
     private void printHelp() 
     {
-        System.out.println("You are lost. You are alone. You wander");
-        System.out.println("around at the university.");
-        System.out.println();
-        System.out.println("Your command words are:");
+        System.out.println("You are a theif. Your goal is to steal the noblemens locked crown");
+        System.out.println("It is hidden next to the Artistry Hall behind a locked door.");
+        //System.out.println("You are" + currentRoom.getDescription);
+        System.out.println("Your command words are:");        
         parser.showCommands();
     }
 
@@ -149,19 +220,94 @@ public class Game
             System.out.println("Go where?");
             return;
         }
+        
 
         String direction = command.getSecondWord();
 
         // Try to leave current room.
-        Room nextRoom = currentRoom.getExit(direction);
+        Room nextRoom = null;
+
+        if(direction.equals("north")) {
+            nextRoom = player.getCurrentRoom().getExit("north");
+        }
+        if(direction.equals("east")) {
+            nextRoom = player.getCurrentRoom().getExit("east");
+        }
+        if(direction.equals("south")) {
+            nextRoom = player.getCurrentRoom().getExit("south");
+        }
+        if(direction.equals("west")) {
+            nextRoom = player.getCurrentRoom().getExit("west");
+        }
 
         if (nextRoom == null) {
             System.out.println("There is no door!");
         }
         else {
-            currentRoom = nextRoom;
+            roomPath.push(player.getCurrentRoom());
+            player.setCurrentRoom(nextRoom);
             System.out.println(currentRoom.getLongDescription());
         }
+    }
+    
+    /**
+     * Will allow the player to look around the room they are in and see different exits that are available.
+     */
+    private void look()
+    {
+        System.out.println(player.getCurrentRoom().getLongDescription());
+    }
+    
+    /**
+     * Will print out if player decides to use eat command to increase health
+     */
+    private void eat()
+    {
+        System.out.println("You have eaten a small snack, you are no longer hungry.");
+    }
+    
+    private void back(){
+        if(roomPath.empty()) {
+            System.out.println("You are at the start, there is no previous room.");
+        } else {
+            // The previous room becomes the current,
+            // and the vice-versa as well
+           player.setCurrentRoom(roomPath.pop());
+           System.out.println(currentRoom.getLongDescription());
+        }
+    }
+    
+    /**
+     * Take an item from the current room
+     */
+    private void take(Command command){
+        if(!command.hasSecondWord()) {
+            System.out.println("Take what?");
+            return;
+        }
+        String itemName = command.getSecondWord();
+        Item item = player.getCurrentRoom().getItem(itemName);
+        int playerCapacity = Player.MAX_INVENTORY_WEIGHT;
+        if(player.getInventoryWeight() + item.getWeight() <= playerCapacity) {
+            player.takeItem(item);
+            System.out.println(item.getDescription() + "  taken");
+            player.getCurrentRoom().removeItem(item);
+        } else {
+            System.out.println("The item load too heavy! Try dropping some items.");
+        }
+        System.out.println("Current capactity: " + player.getInventoryWeight() + " g.");
+    }
+    
+    /**
+     * Drop an item in the current room
+     */
+    private void drop(Command command){
+        if(!command.hasSecondWord()) {
+            System.out.println("Drop what?");
+            return;
+        }
+        String itemName = command.getSecondWord();
+        player.getCurrentRoom().addItem(player.dropItem(itemName));
     }
 
     /** 

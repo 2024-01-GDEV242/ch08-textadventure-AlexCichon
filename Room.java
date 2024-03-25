@@ -1,6 +1,7 @@
 import java.util.Set;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ArrayList;
 
 /**
  * Class Room - a room in an adventure game.
@@ -19,7 +20,10 @@ import java.util.Iterator;
 public class Room 
 {
     private String description;
-    private HashMap<String, Room> exits;        // stores exits of this room.
+    private HashMap<String, Room> exits;
+    private Item item;
+    private ArrayList<Item> items;
+    // stores exits of this room.
 
     /**
      * Create a room described "description". Initially, it has
@@ -31,6 +35,42 @@ public class Room
     {
         this.description = description;
         exits = new HashMap<>();
+        items = new ArrayList<>();
+    }
+    /**
+     * Get item from the room
+     */
+    public Item getItem(String itemName){
+        Item item = null;
+        for(Item i : items){
+            if(i.getDescription().equals(itemName)) {
+                item = i;
+            }
+        }
+        if (item == null) {
+            System.out.println("There is no such item in this room.");
+            return item;
+        }
+        return item;
+    }
+    
+    /**
+     * Remove requested item.
+     * @param item the item.
+     */
+    public void removeItem(Item item){
+        items.remove(item);
+    }
+    
+    public void addItem(String itemDescription, String itemWeight) {
+        items.add(new Item(itemDescription, itemWeight));
+    }
+    
+    public String getItemsInfo() {
+        String itemsInfo = "";
+        for(Item item : items)
+        itemsInfo += item.getItemInfo() + "\n";
+        return itemsInfo;
     }
 
     /**
@@ -42,7 +82,7 @@ public class Room
     {
         exits.put(direction, neighbor);
     }
-
+    
     /**
      * @return The short description of the room
      * (the one that was defined in the constructor).
@@ -60,7 +100,7 @@ public class Room
      */
     public String getLongDescription()
     {
-        return "You are " + description + ".\n" + getExitString();
+        return "You are " + description + ".\n" + getExitString() + item.getItemInfo();
     }
 
     /**
