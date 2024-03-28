@@ -108,13 +108,15 @@ public class Game
 
         
         // initialise room items
-        StudyRoom.setItem("flask", "pretty spangly. It looks like you've got ye flask");
-        Kitchen.setItem("sandwich", "a delicious sandwich");
-        HoldingCells.setItem("gold", "just some gold, sitting around");
+        StudyRoom.setItem("Fancy Pen", "A fancy pen the noble uses to write, could be worth something");
+        Kitchen.setItem("sandwich", "a yummy sandwich");
+        HoldingCells.setItem("sword", "a sword uses to...you dont wanna know");
         Garden.setItem("blue flower", "a blue flower that stands out in the garden");
         Library.setItem("Gold book", "a gold book that twinkles on the shelf");
         MasterBedroom.setItem("Noble Crown", "the crown of the noble of the castle, take it if you dare...");
         TreasuryRoom.setItem("Gold Coins", "all around the room there are coins for the taking");
+        EatingHall.setItem("silverware", "some fancy silverware laying about, its made from true silver");
+        
         
         
         player.addInventory("bagel", "half a strawberry bagel");
