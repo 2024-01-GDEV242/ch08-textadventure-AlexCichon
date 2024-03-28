@@ -1,23 +1,23 @@
 
-
 /**
- * Item.java.Holds information about each item that is in the game.
+ * NPC.java. Will store the  information about the NPC(non playable character)
  * 
  * @author Alexei Cichon
  * @version 03/27/2024
  */
-public class Item
+public class NPC extends Player
 {
-    private String description;
-    private String name;
 
-    /**
-     * Constructor for objects of class Item
-     */
-    public Item(String description, String name)
+    private String name;
+    private String description;
+
+
+    public NPC(String name, String description, String itemname, String itemdesc)
     {
         this.description = description;
         this.name = name;
+        addInventory(itemname, itemdesc);
+        
     }
 
 
@@ -30,4 +30,5 @@ public class Item
     {
         return name;
     }
+    
 }
